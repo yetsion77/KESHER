@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,6 +10,7 @@
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div class="app-container">
         <header class="app-header">
@@ -28,9 +30,26 @@
                             <label for="author">שם מדווח מלא:</label>
                             <input type="text" id="author" placeholder="לדוגמה: משה כהן" required autocomplete="name">
                         </div>
+                        <div class="input-group radio-group">
+                            <label>סוג הדיווח:</label>
+                            <div class="radio-options">
+                                <label class="radio-option">
+                                    <input type="radio" name="reportType" value="event" checked>
+                                    <span class="radio-custom"></span>
+                                    <span>אירוע רגיל</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="reportType" value="fault">
+                                    <span class="radio-custom fault-custom"></span>
+                                    <span>תקלה פתוחה</span>
+                                </label>
+                            </div>
+                        </div>
                         <div class="input-group">
                             <label for="content">תיאור האירוע:</label>
-                            <textarea id="content" rows="4" placeholder="תאר את פרטי האירוע קצר ולעניין, פעולות שבוצעו וסטטוס עדכני..." required></textarea>
+                            <textarea id="content" rows="4"
+                                placeholder="תאר את פרטי האירוע קצר ולעניין, פעולות שבוצעו וסטטוס עדכני..."
+                                required></textarea>
                         </div>
                         <button type="submit" class="submit-btn" id="submit-btn">
                             <span>שלח דיווח עכשיו</span>
@@ -47,7 +66,7 @@
                         <span class="pulse"></span> מחובר בזמן אמת
                     </div>
                 </div>
-                
+
                 <div id="reports-container" class="reports-container">
                     <!-- Reports will be injected here by app.js -->
                     <div class="loading-state">
@@ -61,4 +80,5 @@
     <!-- Firebase SDK (Modular) -->
     <script type="module" src="app.js"></script>
 </body>
+
 </html>

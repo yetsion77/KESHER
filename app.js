@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
-import { getDatabase, ref, push, serverTimestamp, set, onValue, query, orderByChild } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { getDatabase, ref, push, serverTimestamp, set, onValue, query, remove, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -50,6 +50,9 @@ reportForm.addEventListener('submit', async (e) => {
     // Save author name for next time
     localStorage.setItem('kesherAuthor', author);
 
+    const reportTypeElement = document.querySelector('input[name="reportType"]:checked');
+    const reportType = reportTypeElement ? reportTypeElement.value : 'event';
+
     try {
         // Disable button while processing
         submitBtn.disabled = true;
@@ -63,6 +66,8 @@ reportForm.addEventListener('submit', async (e) => {
         await set(newEventRef, {
             author: author,
             content: content,
+            type: reportType,
+            status: reportType === 'fault' ? 'open' : null,
             timestamp: serverTimestamp(),
             clientTime: Date.now() // Standby if server timestamp is slow/unavailable
         });
@@ -148,9 +153,24 @@ onValue(eventsQuery, (snapshot) => {
             return div.innerHTML;
         };
 
+        // Determine type display
+        let typeBadgeStr = '';
+        let isResolved = false;
+        if (event.type === 'fault') {
+            isResolved = event.status === 'resolved';
+            if (isResolved) {
+                typeBadgeStr = `<span class="report-type-badge type-resolved"><i class="fa-solid fa-check-circle"></i> תקלה נסגרה</span>`;
+            } else {
+                typeBadgeStr = `<span class="report-type-badge type-fault"><i class="fa-solid fa-triangle-exclamation"></i> תקלה פתוחה</span>`;
+            }
+        } else {
+            typeBadgeStr = `<span class="report-type-badge type-event"><i class="fa-solid fa-info-circle"></i> אירוע</span>`;
+        }
+
         reportEl.innerHTML = `
             <div class="report-header">
                 <div class="report-author">
+                    ${typeBadgeStr}
                     <i class="fa-solid fa-user-astronaut"></i>
                     <span>${escapeHTML(event.author || 'אנונימי')}</span>
                 </div>
@@ -159,7 +179,11 @@ onValue(eventsQuery, (snapshot) => {
                     <span>${timeStr}</span>
                 </div>
             </div>
-            <div class="report-content">${escapeHTML(event.content || '').replace(/\n/g, '<br>')}</div>
+            <div class="report-content" ${isResolved ? 'style="opacity: 0.7;"' : ''}>${escapeHTML(event.content || '').replace(/\n/g, '<br>')}</div>
+            <div class="report-actions">
+                ${event.type === 'fault' && !isResolved ? `<button class="action-btn resolve-btn" data-id="${event.id}"><i class="fa-solid fa-check"></i> תקלה טופלה</button>` : ''}
+                <button class="action-btn delete-btn" data-id="${event.id}"><i class="fa-solid fa-trash"></i> מחיקה</button>
+            </div>
         `;
 
         reportsContainer.appendChild(reportEl);
@@ -168,14 +192,47 @@ onValue(eventsQuery, (snapshot) => {
         setTimeout(() => {
             reportEl.classList.add('loaded');
         }, 100 + index * 50);
+
+        // Add Action Event Listeners
+        if (event.type === 'fault' && !isResolved) {
+            const resolveBtn = reportEl.querySelector('.resolve-btn');
+            if (resolveBtn) {
+                resolveBtn.addEventListener('click', async () => {
+                    if (confirm('האם אתה בטוח שהתקלה טופלה לחלוטין וניתן לסגור אותה?')) {
+                        try {
+                            const eventToUpdateRef = ref(database, 'events/' + event.id);
+                            await update(eventToUpdateRef, { status: 'resolved' });
+                        } catch (error) {
+                            console.error("Error updating document", error);
+                            alert("שגיאה בעדכון הסטטוס");
+                        }
+                    }
+                });
+            }
+        }
+
+        const deleteBtn = reportEl.querySelector('.delete-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async () => {
+                if (confirm('האם למחוק דיווח זה? פעולה זו סופית ולא ניתנת לביטול.')) {
+                    try {
+                        const eventToDeleteRef = ref(database, 'events/' + event.id);
+                        await remove(eventToDeleteRef);
+                    } catch (error) {
+                        console.error("Error deleting document", error);
+                        alert("שגיאה במחיקת הדיווח");
+                    }
+                }
+            });
+        }
     });
 }, (error) => {
     console.error("Firebase read error: ", error);
     reportsContainer.innerHTML = `
-            < div class="error-msg" style = "display:block; text-align:center; padding:20px; background: rgba(255,0,0,0.1); border-radius: 8px;" >
+        <div class="error-msg" style="display:block; text-align:center; padding:20px; background: rgba(255,0,0,0.1); border-radius: 8px;">
             <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; color: #ff1744; margin-bottom: 10px;"></i>
             <p>שגיאת התחברות למסד הנתונים</p>
             <p style="font-size: 0.9rem; margin-top: 10px;"><strong>הערה למנהל האתר:</strong><br>יש לוודא שהוגדרו הרשאות קריאה וכתיבה (Rules) ב-Firebase Realtime Database.</p>
-        </div >
-            `;
+        </div>
+    `;
 });
