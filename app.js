@@ -336,3 +336,26 @@ if (exportBtn) {
         document.body.removeChild(link);
     });
 }
+
+// Modal logic
+const btnFaults = document.getElementById('btn-faults');
+const btnPhones = document.getElementById('btn-phones');
+const modalFaults = document.getElementById('modal-faults');
+const modalPhones = document.getElementById('modal-phones');
+const closeFaults = document.getElementById('close-faults');
+const closePhones = document.getElementById('close-phones');
+
+if (btnFaults && modalFaults) {
+    btnFaults.addEventListener('click', () => modalFaults.style.display = 'block');
+    closeFaults.addEventListener('click', () => modalFaults.style.display = 'none');
+}
+
+if (btnPhones && modalPhones) {
+    btnPhones.addEventListener('click', () => modalPhones.style.display = 'block');
+    closePhones.addEventListener('click', () => modalPhones.style.display = 'none');
+}
+
+window.addEventListener('click', (e) => {
+    if (e.target === modalFaults) modalFaults.style.display = 'none';
+    if (e.target === modalPhones) modalPhones.style.display = 'none';
+});

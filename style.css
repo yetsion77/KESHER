@@ -51,10 +51,21 @@ body {
 }
 
 .logo-container {
-    font-size: 2.5rem;
-    color: var(--secondary-color);
     margin-bottom: 10px;
-    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.4));
+    display: flex;
+    justify-content: center;
+}
+
+.main-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    border-radius: 50%;
+    /* The image is a circle */
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    background-color: #fff;
+    /* In case of transparency in the original image */
 }
 
 .app-header h1 {
@@ -526,6 +537,163 @@ select#fault-location option {
     margin-top: 10px;
     text-align: center;
     display: none;
+}
+
+/* Header action links */
+.header-actions-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.icon-link {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--secondary-color);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.icon-link:hover {
+    background: rgba(212, 175, 55, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Modals */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(5, 17, 36, 0.85);
+    /* background overlay */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    margin: 10% auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.close-modal {
+    color: var(--text-secondary);
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    /* RTL - left aligned */
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    z-index: 2;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: var(--danger-color);
+    text-decoration: none;
+}
+
+.modal-body {
+    overflow-y: auto;
+    padding-right: 5px;
+    /* scrollbar spacing */
+    margin-top: 10px;
+}
+
+.modal-content h2 {
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fault-list,
+.phone-list {
+    list-style: none;
+}
+
+.fault-list li,
+.phone-list li {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 15px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    line-height: 1.6;
+}
+
+.phone-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.phone-list li span {
+    font-weight: 500;
+}
+
+.phone-list li a {
+    color: var(--success-color);
+    text-decoration: none;
+    font-weight: bold;
+    background: rgba(0, 230, 118, 0.1);
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.phone-list li a:hover {
+    background: rgba(0, 230, 118, 0.2);
+}
+
+.fault-list li strong {
+    color: var(--secondary-color);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.fault-list li a {
+    color: var(--success-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.fault-list ol {
+    margin-right: 25px;
+    margin-top: 8px;
+}
+
+.fault-list ol li {
+    margin-bottom: 5px;
+    background: none;
+    border: none;
+    padding: 0;
+    list-style-type: decimal;
 }
 
 /* Animations */

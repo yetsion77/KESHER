@@ -15,10 +15,16 @@
     <div class="app-container">
         <header class="app-header">
             <div class="logo-container">
-                <i class="fa-solid fa-satellite-dish"></i>
+                <img src="logo.jpg" alt="סמל קשר 1891" class="main-logo">
             </div>
             <h1>מחלקת קשר 1891</h1>
             <p>יומן תפעול מבצעי</p>
+            <div class="header-actions-links">
+                <button id="btn-faults" class="icon-link"><i class="fa-solid fa-screwdriver-wrench"></i> תקלות
+                    נפוצות</button>
+                <button id="btn-phones" class="icon-link"><i class="fa-solid fa-address-book"></i> טלפונים
+                    חשובים</button>
+            </div>
         </header>
 
         <main class="main-content">
@@ -98,6 +104,59 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Faults Modal -->
+    <div id="modal-faults" class="modal">
+        <div class="modal-content glass-card">
+            <span class="close-modal" id="close-faults">&times;</span>
+            <h2><i class="fa-solid fa-screwdriver-wrench"></i> תקלות נפוצות (ליונט)</h2>
+            <div class="modal-body">
+                <ul class="fault-list">
+                    <li><strong>לא מצליח להתחבר לסימבה:</strong> להפעיל VPN.</li>
+                    <li><strong>לא מוגדר מספר לקוח במסך התחברות:</strong> להזין <code>60013</code>.</li>
+                    <li><strong>שינוי בהירות המסך:</strong> להיכנס לעזרים, ומשם לאפליקציית fort.</li>
+                    <li><strong>המכשיר איבד 4G:</strong>
+                        <ol>
+                            <li>להיכנס למצב מנהל בהגדרות</li>
+                            <li>לכתוב סיסמה <code>Cyber2024?</code></li>
+                            <li>צא מ-launcher</li>
+                            <li>להיכנס לאפליקציית forcelte</li>
+                            <li>לכבות המתגים, לחכות 10 שניות ולהדליק מחדש</li>
+                            <li>כפתור הבית ולבחור launcher</li>
+                        </ol>
+                    </li>
+                    <li><strong>בעיות נוספות:</strong> להתקשר לכונן החטיבה: <a href="tel:052-2808135"
+                            dir="ltr">052-2808135</a>.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phones Modal -->
+    <div id="modal-phones" class="modal">
+        <div class="modal-content glass-card">
+            <span class="close-modal" id="close-phones">&times;</span>
+            <h2><i class="fa-solid fa-address-book"></i> טלפונים חשובים</h2>
+            <div class="modal-body">
+                <ul class="phone-list">
+                    <li><span>חמ״ל תקשוב</span> <a href="tel:052-7975176" dir="ltr">052-7975176</a></li>
+                    <li><span>כונן מחשוב</span> <a href="tel:052-7968683" dir="ltr">052-7968683</a></li>
+                    <li><span>כונן מרחב חכם</span> <a href="tel:052-2808135" dir="ltr">052-2808135</a></li>
+                    <li><span>ס. קשר"ח אילון יוסף</span> <a href="tel:050-7288862" dir="ltr">050-7288862</a></li>
+                    <li><span>ס. קשר"ח מריה לפיד</span> <a href="tel:055-8836451" dir="ltr">055-8836451</a></li>
+                    <li><span>רמ"ח שו"ב אלברט</span> <a href="tel:050-6406962" dir="ltr">050-6406962</a></li>
+                    <li><span>קצ"ק יונתן בן הרוש</span> <a href="tel:052-2482992" dir="ltr">052-2482992</a></li>
+                    <li><span>מ"מ צופן נועם</span> <a href="tel:052-5261092" dir="ltr">052-5261092</a></li>
+                    <li><span>מ"מ מרחב חכם ויקה אוניגר</span> <a href="tel:052-8578859" dir="ltr">052-8578859</a></li>
+                    <li><span>מ"מ תצפיות יוסי שלמה</span> <a href="tel:052-2268587" dir="ltr">052-2268587</a></li>
+                    <li><span>טכנ"ר ספיר/ספיר</span> <a href="tel:058-4120201" dir="ltr">058-4120201</a></li>
+                    <li><span>מ"מ הגמ"ר ליאב</span> <a href="tel:058-4428046" dir="ltr">058-4428046</a></li>
+                    <li><span>חמ״ל חורש</span> <a href="tel:04-6582642" dir="ltr">04-6582642</a></li>
+                    <li><span>חמ״ל שכן</span> <a href="tel:04-6582612" dir="ltr">04-6582612</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase SDK (Modular) -->
