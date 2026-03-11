@@ -26,6 +26,8 @@ const authorInput = document.getElementById('author');
 const contentInput = document.getElementById('content');
 const faultLocationGroup = document.getElementById('fault-location-group');
 const faultLocationSelect = document.getElementById('fault-location');
+const faultTechnicianGroup = document.getElementById('fault-technician-group');
+const faultTechnicianInput = document.getElementById('fault-technician');
 const lessonInput = document.getElementById('lesson');
 const submitBtn = document.getElementById('submit-btn');
 const reportsContainer = document.getElementById('reports-container');
@@ -37,9 +39,12 @@ reportTypeRadios.forEach(radio => {
     radio.addEventListener('change', (e) => {
         if (e.target.value === 'fault') {
             faultLocationGroup.style.display = 'block';
+            faultTechnicianGroup.style.display = 'block';
         } else {
             faultLocationGroup.style.display = 'none';
+            faultTechnicianGroup.style.display = 'none';
             faultLocationSelect.value = ''; // Reset if switched back
+            faultTechnicianInput.value = '';
         }
     });
 });
@@ -63,6 +68,7 @@ reportForm.addEventListener('submit', async (e) => {
     const content = contentInput.value.trim();
     const lesson = lessonInput.value.trim();
     const faultLocation = faultLocationSelect.value;
+    const faultTechnician = faultTechnicianInput.value.trim();
 
     if (!author || !content) return;
 
@@ -93,6 +99,7 @@ reportForm.addEventListener('submit', async (e) => {
             type: reportType,
             status: reportType === 'fault' ? 'open' : null,
             location: reportType === 'fault' ? faultLocation : null,
+            technician: reportType === 'fault' ? faultTechnician : null,
             lesson: lesson || null,
             timestamp: serverTimestamp(),
             clientTime: Date.now() // Standby if server timestamp is slow/unavailable
@@ -102,8 +109,10 @@ reportForm.addEventListener('submit', async (e) => {
         contentInput.value = '';
         lessonInput.value = '';
         faultLocationSelect.value = '';
+        faultTechnicianInput.value = '';
         document.querySelector('input[name="reportType"][value="event"]').checked = true;
         faultLocationGroup.style.display = 'none';
+        faultTechnicianGroup.style.display = 'none';
 
         // Restore button state with success
         submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> <span>נשלח בהצלחה</span>';
@@ -212,9 +221,10 @@ onValue(eventsQuery, (snapshot) => {
                 </div>
             </div>
             <div class="report-content" ${isResolved ? 'style="opacity: 0.7;"' : ''}>${escapeHTML(event.content || '').replace(/\n/g, '<br>')}</div>
-            ${(event.location || event.lesson) ? `
+            ${(event.location || event.lesson || event.technician) ? `
                 <div class="report-metadata">
                     ${event.location ? `<div class="metadata-item"><i class="fa-solid fa-location-dot"></i> <span><strong>מיקום:</strong> ${escapeHTML(event.location)}</span></div>` : ''}
+                    ${event.technician ? `<div class="metadata-item"><i class="fa-solid fa-screwdriver-wrench"></i> <span><strong>טופל ע"י:</strong> ${escapeHTML(event.technician)}</span></div>` : ''}
                     ${event.lesson ? `<div class="metadata-item"><i class="fa-solid fa-lightbulb"></i> <span><strong>לקח:</strong> ${escapeHTML(event.lesson)}</span></div>` : ''}
                 </div>
             ` : ''}
@@ -285,7 +295,7 @@ if (exportBtn) {
         }
 
         let csvContent = "\uFEFF"; // UTF-8 BOM for Hebrew support in Excel
-        csvContent += "תאריך,שעה,סוג הדיווח,סטטוס תקלה,מדווח,מיקום תקלה,תיאור האירוע,לקח מקצועי\r\n";
+        csvContent += "תאריך,שעה,סוג הדיווח,סטטוס תקלה,מדווח,גורם מטפל בתקלה,מיקום תקלה,תיאור האירוע,לקח מקצועי\r\n";
 
         eventsToExport.forEach(event => {
             const dateObj = event.timestamp ? new Date(event.timestamp) : new Date(event.clientTime);
@@ -301,6 +311,7 @@ if (exportBtn) {
                 typeStr,
                 statusStr,
                 event.author || '',
+                event.technician || '',
                 event.location || '',
                 event.content || '',
                 event.lesson || ''
