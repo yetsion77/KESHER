@@ -45,11 +45,26 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="input-group" id="fault-location-group" style="display: none;">
+                            <label for="fault-location">מקום התקלה:</label>
+                            <select id="fault-location">
+                                <option value="" disabled selected>בחר מיקום...</option>
+                                <option value="חמ״ל">חמ"ל</option>
+                                <option value="מפג״ד">מפג"ד</option>
+                                <option value="פלוגה א">פלוגה א'</option>
+                                <option value="פלוגה ב">פלוגה ב'</option>
+                                <option value="פלוגה ג">פלוגה ג'</option>
+                            </select>
+                        </div>
                         <div class="input-group">
                             <label for="content">תיאור האירוע:</label>
                             <textarea id="content" rows="4"
                                 placeholder="תאר את פרטי האירוע קצר ולעניין, פעולות שבוצעו וסטטוס עדכני..."
                                 required></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="lesson">לקח מקצועי (אופציונלי):</label>
+                            <textarea id="lesson" rows="2" placeholder="מה למדנו מהמקרה? (הפקת לקחים)"></textarea>
                         </div>
                         <button type="submit" class="submit-btn" id="submit-btn">
                             <span>שלח דיווח עכשיו</span>
@@ -62,8 +77,12 @@
             <section class="reports-feed-section">
                 <div class="feed-header">
                     <h2><i class="fa-solid fa-clock-rotate-left"></i> אירועים אחרונים</h2>
-                    <div class="status-indicator">
-                        <span class="pulse"></span> מחובר בזמן אמת
+                    <div class="feed-header-actions">
+                        <button id="export-btn" class="export-btn" title="ייצוא נתונים לאקסל"><i
+                                class="fa-solid fa-file-excel"></i></button>
+                        <div class="status-indicator">
+                            <span class="pulse"></span> טוען
+                        </div>
                     </div>
                 </div>
 

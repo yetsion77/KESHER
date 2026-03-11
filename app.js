@@ -24,8 +24,25 @@ const database = getDatabase(app, firebaseConfig.databaseURL);
 const reportForm = document.getElementById('report-form');
 const authorInput = document.getElementById('author');
 const contentInput = document.getElementById('content');
+const faultLocationGroup = document.getElementById('fault-location-group');
+const faultLocationSelect = document.getElementById('fault-location');
+const lessonInput = document.getElementById('lesson');
 const submitBtn = document.getElementById('submit-btn');
 const reportsContainer = document.getElementById('reports-container');
+const exportBtn = document.getElementById('export-btn');
+const reportTypeRadios = document.querySelectorAll('input[name="reportType"]');
+
+// Toggle location visibility
+reportTypeRadios.forEach(radio => {
+    radio.addEventListener('change', (e) => {
+        if (e.target.value === 'fault') {
+            faultLocationGroup.style.display = 'block';
+        } else {
+            faultLocationGroup.style.display = 'none';
+            faultLocationSelect.value = ''; // Reset if switched back
+        }
+    });
+});
 
 // Check if user previously entered their name and restore it
 const savedAuthor = localStorage.getItem('kesherAuthor');
@@ -44,6 +61,8 @@ reportForm.addEventListener('submit', async (e) => {
 
     const author = authorInput.value.trim();
     const content = contentInput.value.trim();
+    const lesson = lessonInput.value.trim();
+    const faultLocation = faultLocationSelect.value;
 
     if (!author || !content) return;
 
@@ -52,6 +71,11 @@ reportForm.addEventListener('submit', async (e) => {
 
     const reportTypeElement = document.querySelector('input[name="reportType"]:checked');
     const reportType = reportTypeElement ? reportTypeElement.value : 'event';
+
+    if (reportType === 'fault' && !faultLocation) {
+        alert("נא לבחור את מקום התקלה.");
+        return;
+    }
 
     try {
         // Disable button while processing
@@ -68,12 +92,18 @@ reportForm.addEventListener('submit', async (e) => {
             content: content,
             type: reportType,
             status: reportType === 'fault' ? 'open' : null,
+            location: reportType === 'fault' ? faultLocation : null,
+            lesson: lesson || null,
             timestamp: serverTimestamp(),
             clientTime: Date.now() // Standby if server timestamp is slow/unavailable
         });
 
         // Reset form content, keep author
         contentInput.value = '';
+        lessonInput.value = '';
+        faultLocationSelect.value = '';
+        document.querySelector('input[name="reportType"][value="event"]').checked = true;
+        faultLocationGroup.style.display = 'none';
 
         // Restore button state with success
         submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> <span>נשלח בהצלחה</span>';
@@ -122,6 +152,8 @@ onValue(eventsQuery, (snapshot) => {
         const timeB = b.timestamp || b.clientTime || 0;
         return timeB - timeA;
     });
+
+    window.currentEvents = events; // Store for export
 
     // Render events
     events.forEach((event, index) => {
@@ -180,6 +212,12 @@ onValue(eventsQuery, (snapshot) => {
                 </div>
             </div>
             <div class="report-content" ${isResolved ? 'style="opacity: 0.7;"' : ''}>${escapeHTML(event.content || '').replace(/\n/g, '<br>')}</div>
+            ${(event.location || event.lesson) ? `
+                <div class="report-metadata">
+                    ${event.location ? `<div class="metadata-item"><i class="fa-solid fa-location-dot"></i> <span><strong>מיקום:</strong> ${escapeHTML(event.location)}</span></div>` : ''}
+                    ${event.lesson ? `<div class="metadata-item"><i class="fa-solid fa-lightbulb"></i> <span><strong>לקח:</strong> ${escapeHTML(event.lesson)}</span></div>` : ''}
+                </div>
+            ` : ''}
             <div class="report-actions">
                 ${event.type === 'fault' && !isResolved ? `<button class="action-btn resolve-btn" data-id="${event.id}"><i class="fa-solid fa-check"></i> תקלה טופלה</button>` : ''}
                 <button class="action-btn delete-btn" data-id="${event.id}"><i class="fa-solid fa-trash"></i> מחיקה</button>
@@ -236,3 +274,54 @@ onValue(eventsQuery, (snapshot) => {
         </div>
     `;
 });
+
+// Export functionality
+if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+        const eventsToExport = window.currentEvents;
+        if (!eventsToExport || eventsToExport.length === 0) {
+            alert("אין נתונים לייצוא.");
+            return;
+        }
+
+        let csvContent = "\uFEFF"; // UTF-8 BOM for Hebrew support in Excel
+        csvContent += "תאריך,שעה,סוג הדיווח,סטטוס תקלה,מדווח,מיקום תקלה,תיאור האירוע,לקח מקצועי\r\n";
+
+        eventsToExport.forEach(event => {
+            const dateObj = event.timestamp ? new Date(event.timestamp) : new Date(event.clientTime);
+            const dateStr = !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('he-IL') : '';
+            const timeStr = !isNaN(dateObj.getTime()) ? dateObj.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '';
+
+            const typeStr = event.type === 'fault' ? 'תקלה פתוחה' : 'אירוע רגיל';
+            const statusStr = event.status === 'resolved' ? 'תקלה נסגרה' : (event.status === 'open' ? 'פתוחה' : '');
+
+            const rowArray = [
+                dateStr,
+                timeStr,
+                typeStr,
+                statusStr,
+                event.author || '',
+                event.location || '',
+                event.content || '',
+                event.lesson || ''
+            ].map(item => {
+                let str = String(item).replace(/"/g, '""').replace(/\n/g, ' ');
+                return `"${str}"`;
+            });
+
+            csvContent += rowArray.join(",") + "\r\n";
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        // Replace dots and slashes to make valid filename
+        const dateFilename = new Date().toLocaleDateString('he-IL').replace(/[\.\/]/g, '-');
+        link.setAttribute("download", `kesher1891_log_${dateFilename}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+}

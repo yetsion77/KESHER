@@ -111,7 +111,8 @@ body {
 }
 
 .input-group input,
-.input-group textarea {
+.input-group textarea,
+.input-group select {
     width: 100%;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--border-color);
@@ -121,10 +122,28 @@ body {
     font-family: inherit;
     font-size: 1rem;
     transition: all 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* Add custom arrow to select */
+select#fault-location {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: left 15px center;
+    /* RTL orientation */
+    background-size: 15px;
+}
+
+select#fault-location option {
+    background: var(--bg-color);
+    color: var(--text-primary);
 }
 
 .input-group input:focus,
-.input-group textarea:focus {
+.input-group textarea:focus,
+.input-group select:focus {
     outline: none;
     border-color: var(--secondary-color);
     box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
@@ -256,6 +275,36 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.feed-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.export-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: #00e676;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.export-btn:hover {
+    background: rgba(0, 230, 118, 0.1);
+    border-color: #00e676;
+    transform: translateY(-2px);
+}
+
+.export-btn:active {
+    transform: translateY(0);
 }
 
 .status-indicator {
@@ -401,6 +450,26 @@ body {
     white-space: pre-wrap;
     word-break: break-word;
     line-height: 1.5;
+}
+
+.report-metadata {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.metadata-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.metadata-item i {
+    color: var(--secondary-color);
+    margin-top: 3px;
 }
 
 .report-actions {
