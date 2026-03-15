@@ -24,6 +24,7 @@
                     נפוצות</button>
                 <button id="btn-phones" class="icon-link"><i class="fa-solid fa-address-book"></i> טלפונים
                     חשובים</button>
+                <button id="btn-guards" class="icon-link"><i class="fa-solid fa-shield-halved"></i> רשימת שמירה</button>
             </div>
         </header>
 
@@ -155,6 +156,24 @@
                     <li><span>חמ״ל חורש</span> <a href="tel:04-6582642" dir="ltr">04-6582642</a></li>
                     <li><span>חמ״ל שכן</span> <a href="tel:04-6582612" dir="ltr">04-6582612</a></li>
                 </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guards Modal -->
+    <div id="modal-guards" class="modal">
+        <div class="modal-content glass-card guards-modal-content">
+            <span class="close-modal" id="close-guards">&times;</span>
+            <h2><i class="fa-solid fa-shield-halved"></i> רשימת שמירה</h2>
+            <div class="modal-body" id="guards-container">
+                <div class="loading-state">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i> טוען נתונים...
+                </div>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button id="reset-guards-btn"
+                    style="background:none; border:none; color:var(--text-secondary); text-decoration:underline; cursor:pointer; font-size:0.8rem;">איפוס
+                    רשימה (לקריאת נתוני ברירת המחדל מחדש)</button>
             </div>
         </div>
     </div>

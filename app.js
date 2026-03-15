@@ -340,10 +340,15 @@ if (exportBtn) {
 // Modal logic
 const btnFaults = document.getElementById('btn-faults');
 const btnPhones = document.getElementById('btn-phones');
+const btnGuards = document.getElementById('btn-guards');
 const modalFaults = document.getElementById('modal-faults');
 const modalPhones = document.getElementById('modal-phones');
+const modalGuards = document.getElementById('modal-guards');
 const closeFaults = document.getElementById('close-faults');
 const closePhones = document.getElementById('close-phones');
+const closeGuards = document.getElementById('close-guards');
+const guardsContainer = document.getElementById('guards-container');
+const resetGuardsBtn = document.getElementById('reset-guards-btn');
 
 if (btnFaults && modalFaults) {
     btnFaults.addEventListener('click', () => modalFaults.style.display = 'block');
@@ -355,7 +360,139 @@ if (btnPhones && modalPhones) {
     closePhones.addEventListener('click', () => modalPhones.style.display = 'none');
 }
 
+if (btnGuards && modalGuards) {
+    btnGuards.addEventListener('click', () => modalGuards.style.display = 'block');
+    closeGuards.addEventListener('click', () => modalGuards.style.display = 'none');
+}
+
 window.addEventListener('click', (e) => {
     if (e.target === modalFaults) modalFaults.style.display = 'none';
     if (e.target === modalPhones) modalPhones.style.display = 'none';
+    if (e.target === modalGuards) modalGuards.style.display = 'none';
 });
+
+// Guards feature integration
+const guardsRef = ref(database, 'guards');
+
+const defaultGuardsData = {
+    day1: {
+        name: "שני, 16.3",
+        order: 1,
+        shifts: {
+            "00:00": "יעקב", "02:00": "רן", "04:00": "נועם", "06:00": "גיא", "08:00": "דני",
+            "10:00": "פלס״ם", "12:00": "פלס״ם", "14:00": "פלס״ם", "16:00": "פלס״ם", "18:00": "פלס״ם", "20:00": "פלס״ם", "22:00": "פלס״ם"
+        }
+    },
+    day2: {
+        name: "שלישי, 17.3",
+        order: 2,
+        shifts: {
+            "00:00": "פלס״ם", "02:00": "שוהם", "04:00": "אלעד", "06:00": "?", "08:00": "אביב",
+            "10:00": "?", "12:00": "?", "14:00": "פלס״ם", "16:00": "פלס״ם", "18:00": "פלס״ם", "20:00": "פלס״ם", "22:00": "פלס״ם"
+        }
+    },
+    day3: {
+        name: "רביעי",
+        order: 3,
+        shifts: {
+            "00:00": "?", "02:00": "פלס״ם", "04:00": "פלס״ם", "06:00": "פלס״ם", "08:00": "פלס״ם",
+            "10:00": "פלס״ם", "12:00": "פלס״ם", "14:00": "?", "16:00": "?", "18:00": "?", "20:00": "?", "22:00": "?"
+        }
+    },
+    day4: {
+        name: "חמישי",
+        order: 4,
+        shifts: {
+            "00:00": "?", "02:00": "פלס״ם", "04:00": "פלס״ם", "06:00": "פלס״ם", "08:00": "פלס״ם",
+            "10:00": "פלס״ם", "12:00": "פלס״ם", "14:00": "?", "16:00": "?", "18:00": "?", "20:00": "?", "22:00": "?"
+        }
+    },
+    day5: {
+        name: "שישי",
+        order: 5,
+        shifts: {
+            "00:00": "?", "02:00": "פלס״ם", "04:00": "פלס״ם", "06:00": "פלס״ם", "08:00": "פלס״ם",
+            "10:00": "פלס״ם", "12:00": "פלס״ם", "14:00": "?", "16:00": "?", "18:00": "?", "20:00": "?", "22:00": "?"
+        }
+    },
+    day6: {
+        name: "שבת",
+        order: 6,
+        shifts: {
+            "00:00": "?", "02:00": "פלס״ם", "04:00": "פלס״ם", "06:00": "פלס״ם", "08:00": "פלס״ם",
+            "10:00": "פלס״ם", "12:00": "פלס״ם", "14:00": "?", "16:00": "?", "18:00": "?", "20:00": "?", "22:00": "?"
+        }
+    }
+};
+
+if (resetGuardsBtn) {
+    resetGuardsBtn.addEventListener('click', async () => {
+        if (confirm('מחיקת ושחזור הרשימה למצב המקורי, האם אתה בטוח?')) {
+            await set(guardsRef, defaultGuardsData);
+        }
+    });
+}
+
+const timeSort = (a, b) => {
+    return parseInt(a.split(':')[0]) - parseInt(b.split(':')[0]);
+};
+
+onValue(guardsRef, (snapshot) => {
+    if (!guardsContainer) return;
+
+    if (!snapshot.exists()) {
+        set(guardsRef, defaultGuardsData);
+        return;
+    }
+
+    const data = snapshot.val();
+    let html = '';
+
+    const sortedDays = Object.keys(data).sort((a, b) => (data[a].order || 0) - (data[b].order || 0));
+
+    sortedDays.forEach(dayKey => {
+        const dayInfo = data[dayKey];
+        html += `<div class="guard-day">
+            <h3>${dayInfo.name}</h3>
+            <div class="shifts-list">`;
+
+        const sortedTimes = Object.keys(dayInfo.shifts).sort(timeSort);
+        sortedTimes.forEach(time => {
+            const assignee = dayInfo.shifts[time];
+            html += `<div class="shift-row">
+                        <div class="shift-time">${time}</div>
+                        <div class="shift-assignee">`;
+
+            if (assignee === "פלס״ם") {
+                html += `<span class="assignee-palsam">פלס״ם</span>`;
+            } else if (!assignee || assignee === "?") {
+                html += `<button class="assign-btn" onclick="window.assignShift('${dayKey}', '${time}')">שבץ אותי</button>`;
+            } else {
+                html += `<span class="assignee-name">${assignee}</span>
+                         <button class="unassign-btn" onclick="window.unassignShift('${dayKey}', '${time}')" title="הסר שיבוץ"><i class="fa-solid fa-times"></i></button>`;
+            }
+
+            html += `</div></div>`;
+        });
+        html += `</div></div>`;
+    });
+
+    guardsContainer.innerHTML = html;
+});
+
+window.assignShift = async (dayKey, time) => {
+    const savedName = localStorage.getItem('kesherAuthor');
+    const name = window.prompt("הכנס שם לשמירה פה:", savedName || "");
+    if (name && name.trim()) {
+        localStorage.setItem('kesherAuthor', name.trim());
+        const specificRef = ref(database, `guards/${dayKey}/shifts/${time}`);
+        await set(specificRef, name.trim());
+    }
+};
+
+window.unassignShift = async (dayKey, time) => {
+    if (confirm("האם להסיר את השומר משעה זו? כולם יראו עמדה פנויה.")) {
+        const specificRef = ref(database, `guards/${dayKey}/shifts/${time}`);
+        await set(specificRef, "?");
+    }
+};
