@@ -348,7 +348,6 @@ const closeFaults = document.getElementById('close-faults');
 const closePhones = document.getElementById('close-phones');
 const closeGuards = document.getElementById('close-guards');
 const guardsContainer = document.getElementById('guards-container');
-const resetGuardsBtn = document.getElementById('reset-guards-btn');
 
 if (btnFaults && modalFaults) {
     btnFaults.addEventListener('click', () => modalFaults.style.display = 'block');
@@ -425,14 +424,6 @@ const defaultGuardsData = {
     }
 };
 
-if (resetGuardsBtn) {
-    resetGuardsBtn.addEventListener('click', async () => {
-        if (confirm('מחיקת ושחזור הרשימה למצב המקורי, האם אתה בטוח?')) {
-            await set(guardsRef, defaultGuardsData);
-        }
-    });
-}
-
 const timeSort = (a, b) => {
     return parseInt(a.split(':')[0]) - parseInt(b.split(':')[0]);
 };
@@ -466,7 +457,7 @@ onValue(guardsRef, (snapshot) => {
             if (assignee === "פלס״ם") {
                 html += `<span class="assignee-palsam">פלס״ם</span>`;
             } else if (!assignee || assignee === "?") {
-                html += `<button class="assign-btn" onclick="window.assignShift('${dayKey}', '${time}')">שבץ אותי</button>`;
+                html += `<button class="assign-btn" onclick="window.assignShift('${dayKey}', '${time}')">פנוי</button>`;
             } else {
                 html += `<span class="assignee-name">${assignee}</span>
                          <button class="unassign-btn" onclick="window.unassignShift('${dayKey}', '${time}')" title="הסר שיבוץ"><i class="fa-solid fa-times"></i></button>`;
