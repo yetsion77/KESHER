@@ -444,11 +444,13 @@ onValue(guardsRef, (snapshot) => {
                         <div class="shift-assignee">`;
 
             if (assignee === "פלס״ם") {
-                html += `<span class="assignee-palsam">פלס״ם</span>`;
+                html += `<span class="assignee-palsam" style="cursor:help;" onclick="window.togglePalsam('${dayKey}', '${time}', '${assignee}')" title="לחיצה תשנה חזרה לעמדה שלנו">פלס״ם</span>`;
             } else if (!assignee || assignee === "?") {
-                html += `<button class="assign-btn" onclick="window.assignShift('${dayKey}', '${time}')">פנוי</button>`;
+                html += `<button class="unassign-btn" style="opacity:0.3; font-size: 0.8em;" onclick="window.togglePalsam('${dayKey}', '${time}', '?')" title="העבר לשמירת פלס״ם"><i class="fa-solid fa-right-left"></i></button>
+                         <button class="assign-btn" onclick="window.assignShift('${dayKey}', '${time}')">פנוי</button>`;
             } else {
-                html += `<span class="assignee-name">${assignee}</span>
+                html += `<button class="unassign-btn" style="opacity:0.3; font-size: 0.8em;" onclick="window.togglePalsam('${dayKey}', '${time}', '${assignee}')" title="העבר לשמירת פלס״ם (ימחק את השם)"><i class="fa-solid fa-right-left"></i></button>
+                         <span class="assignee-name">${assignee}</span>
                          <button class="unassign-btn" onclick="window.unassignShift('${dayKey}', '${time}')" title="הסר שיבוץ"><i class="fa-solid fa-times"></i></button>`;
             }
 
@@ -475,6 +477,19 @@ window.unassignShift = async (dayKey, time) => {
         const specificRef = ref(database, `guards/${dayKey}/shifts/${time}`);
         await set(specificRef, "?");
     }
+};
+
+window.togglePalsam = async (dayKey, time, currentAssignee) => {
+    let newState = "";
+    if (currentAssignee === "פלס״ם") {
+        if (!confirm("להפוך זמן זה משמירת פלס״ם לשמירה פנויה שלנו?")) return;
+        newState = "?";
+    } else {
+        if (!confirm("להעביר שמירה זו (כולל מי ששובץ) לאחריות פלס״ם?")) return;
+        newState = "פלס״ם";
+    }
+    const specificRef = ref(database, `guards/${dayKey}/shifts/${time}`);
+    await set(specificRef, newState);
 };
 
 // One-off migration script to fix existing schedule in Firebase
