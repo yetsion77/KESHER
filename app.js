@@ -438,15 +438,47 @@ onValue(guardsRef, (snapshot) => {
     const todayStr = today.getDate() + '.' + (today.getMonth() + 1);
 
     // Calculate shift statistics
-    const guardStats = {};
+    const baseStats = {
+        "סלבה": { total: 4, hard: 3 },
+        "גיא": { total: 5, hard: 2 },
+        "רז": { total: 4, hard: 1 },
+        "יסן": { total: 5, hard: 1 },
+        "דני": { total: 6, hard: 1 },
+        "שגיא": { total: 4, hard: 0 },
+        "אלעד": { total: 6, hard: 0 },
+        "חן": { total: 4, hard: 1 },
+        "דור": { total: 5, hard: 3 },
+        "שוהם": { total: 4, hard: 1 },
+        "חגי": { total: 3, hard: 3 },
+        "זיו": { total: 3, hard: 1 },
+        "ינון": { total: 1, hard: 0 },
+        "אביב": { total: 6, hard: 2 },
+        "יעקב": { total: 3, hard: 1 },
+        "רפאל": { total: 4, hard: 2 },
+        "איציק": { total: 5, hard: 0 },
+        "רן": { total: 3, hard: 1 },
+        "נועם": { total: 3, hard: 0 }
+    };
+
+    const guardStats = JSON.parse(JSON.stringify(baseStats));
     const hardShifts = ["00:00", "02:00", "04:00", "06:00"];
+
+    const nameMap = {
+        "גאי": "גיא",
+        "גאי זך": "גיא",
+        "שהם": "שוהם"
+    };
 
     Object.keys(data).forEach(dayKey => {
         const dayInfo = data[dayKey];
         if (dayInfo && dayInfo.shifts) {
             Object.keys(dayInfo.shifts).forEach(time => {
-                const assignee = dayInfo.shifts[time];
+                let assignee = dayInfo.shifts[time];
                 if (assignee && assignee !== "?" && assignee !== "פלס״ם") {
+                    assignee = assignee.trim();
+                    if (nameMap[assignee]) {
+                        assignee = nameMap[assignee];
+                    }
                     if (!guardStats[assignee]) {
                         guardStats[assignee] = { total: 0, hard: 0 };
                     }
@@ -471,7 +503,7 @@ onValue(guardsRef, (snapshot) => {
             const s = guardStats[g];
             html += `<div class="summary-item">
                 <span class="summary-name">${g}</span>
-                <span class="summary-stats">סה״כ: ${s.total} <span class="hard-shifts" title="חצות עד שמונה בבוקר">(קשות: ${s.hard})</span></span>
+                <span class="summary-stats">סה״כ: ${s.total} <span class="hard-shifts" title="חצות עד שמונה בבוקר">(לילה: ${s.hard})</span></span>
             </div>`;
         });
         html += `</div></div>`;
