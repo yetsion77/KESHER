@@ -438,28 +438,7 @@ onValue(guardsRef, (snapshot) => {
     const todayStr = today.getDate() + '.' + (today.getMonth() + 1);
 
     // Calculate shift statistics
-    const baseStats = {
-        "סלבה": { total: 4, hard: 3 },
-        "גיא": { total: 5, hard: 2 },
-        "רז": { total: 4, hard: 1 },
-        "דני": { total: 6, hard: 1 },
-        "שגיא": { total: 4, hard: 0 },
-        "אלעד": { total: 6, hard: 0 },
-        "חן": { total: 4, hard: 1 },
-        "דור": { total: 5, hard: 3 },
-        "שוהם": { total: 4, hard: 1 },
-        "חגי": { total: 3, hard: 3 },
-        "זיו": { total: 3, hard: 1 },
-        "ינון": { total: 1, hard: 0 },
-        "אביב": { total: 6, hard: 2 },
-        "יעקב": { total: 3, hard: 1 },
-        "רפאל": { total: 4, hard: 2 },
-        "איציק": { total: 5, hard: 0 },
-        "רן": { total: 3, hard: 1 },
-        "נועם": { total: 8, hard: 1 }
-    };
-
-    const guardStats = JSON.parse(JSON.stringify(baseStats));
+    const guardStats = {};
     const hardShifts = ["00:00", "02:00", "04:00", "06:00"];
 
     const nameMap = {
@@ -467,7 +446,8 @@ onValue(guardsRef, (snapshot) => {
         "גאי זך": "גיא",
         "שהם": "שוהם",
         "סאסי": "נועם",
-        "יסן": "נועם"
+        "יסן": "נועם",
+        "יעקב": "ינון"
     };
 
     Object.keys(data).forEach(dayKey => {
