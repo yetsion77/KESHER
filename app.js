@@ -442,7 +442,6 @@ onValue(guardsRef, (snapshot) => {
         "סלבה": { total: 4, hard: 3 },
         "גיא": { total: 5, hard: 2 },
         "רז": { total: 4, hard: 1 },
-        "יסן": { total: 5, hard: 1 },
         "דני": { total: 6, hard: 1 },
         "שגיא": { total: 4, hard: 0 },
         "אלעד": { total: 6, hard: 0 },
@@ -457,7 +456,7 @@ onValue(guardsRef, (snapshot) => {
         "רפאל": { total: 4, hard: 2 },
         "איציק": { total: 5, hard: 0 },
         "רן": { total: 3, hard: 1 },
-        "נועם": { total: 3, hard: 0 }
+        "נועם": { total: 8, hard: 1 }
     };
 
     const guardStats = JSON.parse(JSON.stringify(baseStats));
@@ -466,7 +465,9 @@ onValue(guardsRef, (snapshot) => {
     const nameMap = {
         "גאי": "גיא",
         "גאי זך": "גיא",
-        "שהם": "שוהם"
+        "שהם": "שוהם",
+        "סאסי": "נועם",
+        "יסן": "נועם"
     };
 
     Object.keys(data).forEach(dayKey => {
