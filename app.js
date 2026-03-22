@@ -360,7 +360,15 @@ if (btnPhones && modalPhones) {
 }
 
 if (btnGuards && modalGuards) {
-    btnGuards.addEventListener('click', () => modalGuards.style.display = 'block');
+    btnGuards.addEventListener('click', () => {
+        modalGuards.style.display = 'block';
+        setTimeout(() => {
+            const todayEl = document.getElementById('today-guard-day');
+            if (todayEl) {
+                todayEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 150);
+    });
     closeGuards.addEventListener('click', () => modalGuards.style.display = 'none');
 }
 
@@ -426,14 +434,60 @@ onValue(guardsRef, (snapshot) => {
         }
     }
 
+    const today = new Date();
+    const todayStr = today.getDate() + '.' + (today.getMonth() + 1);
+
+    // Calculate shift statistics
+    const guardStats = {};
+    const hardShifts = ["00:00", "02:00", "04:00", "06:00"];
+
+    Object.keys(data).forEach(dayKey => {
+        const dayInfo = data[dayKey];
+        if (dayInfo && dayInfo.shifts) {
+            Object.keys(dayInfo.shifts).forEach(time => {
+                const assignee = dayInfo.shifts[time];
+                if (assignee && assignee !== "?" && assignee !== "פלס״ם") {
+                    if (!guardStats[assignee]) {
+                        guardStats[assignee] = { total: 0, hard: 0 };
+                    }
+                    guardStats[assignee].total++;
+                    if (hardShifts.includes(time)) {
+                        guardStats[assignee].hard++;
+                    }
+                }
+            });
+        }
+    });
+
     let html = '';
+    const sortedGuards = Object.keys(guardStats).sort((a, b) => guardStats[b].total - guardStats[a].total);
+
+    if (sortedGuards.length > 0) {
+        html += `<div class="guards-summary-box">
+            <h4><i class="fa-solid fa-chart-pie"></i> סיכום שמירות</h4>
+            <div class="summary-grid">`;
+
+        sortedGuards.forEach(g => {
+            const s = guardStats[g];
+            html += `<div class="summary-item">
+                <span class="summary-name">${g}</span>
+                <span class="summary-stats">סה״כ: ${s.total} <span class="hard-shifts" title="חצות עד שמונה בבוקר">(קשות: ${s.hard})</span></span>
+            </div>`;
+        });
+        html += `</div></div>`;
+    }
 
     const sortedDays = Object.keys(data).sort((a, b) => (data[a].order || 0) - (data[b].order || 0));
 
     sortedDays.forEach(dayKey => {
         const dayInfo = data[dayKey];
-        html += `<div class="guard-day">
-            <h3>${dayInfo.name}</h3>
+        const isToday = dayInfo.name && dayInfo.name.includes(todayStr);
+        const dayClass = isToday ? 'guard-day current-day-highlight' : 'guard-day';
+        const dayId = isToday ? ' id="today-guard-day"' : '';
+        const badgeHtml = isToday ? '<span class="current-day-badge">היום</span>' : '';
+
+        html += `<div class="${dayClass}"${dayId}>
+            <h3>${dayInfo.name} ${badgeHtml}</h3>
             <div class="shifts-list">`;
 
         const sortedTimes = Object.keys(dayInfo.shifts).sort(timeSort);

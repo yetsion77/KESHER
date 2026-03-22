@@ -850,6 +850,74 @@ select#fault-location option {
     color: #ff5252;
 }
 
+/* Guard Summary Styles */
+.guards-summary-box {
+    background: rgba(11, 46, 89, 0.4);
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 25px;
+}
+
+.guards-summary-box h4 {
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1.1rem;
+    border-bottom: 1px dashed rgba(212, 175, 55, 0.3);
+    padding-bottom: 5px;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.summary-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    border-right: 3px solid var(--success-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-name {
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+}
+
+.summary-stats {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.summary-stats .hard-shifts {
+    color: var(--accent-color);
+    font-weight: 500;
+}
+
+/* Current Day Highlight */
+.guard-day.current-day-highlight {
+    border: 2px solid var(--secondary-color);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.current-day-badge {
+    background: var(--secondary-color);
+    color: var(--bg-color);
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-right: 10px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
 /* Mobile Adjustments */
 @media (max-width: 480px) {
     .app-container {
