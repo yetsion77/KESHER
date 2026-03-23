@@ -559,49 +559,4 @@ window.togglePalsam = async (dayKey, time, currentAssignee) => {
     await set(specificRef, newState);
 };
 
-// One-off migration script to fix existing schedule in Firebase
-get(guardsRef).then(snapshot => {
-    if (snapshot.exists()) {
-        const data = snapshot.val();
-        let needsUpdate = false;
 
-        const createShiftsInner = (usTimes) => {
-            const allTimes = ["00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"];
-            const shifts = {};
-            for (let t of allTimes) shifts[t] = usTimes.includes(t) ? "?" : "פלס״ם";
-            return shifts;
-        };
-        const pU = ["12:00", "14:00", "16:00", "18:00", "20:00", "22:00"];
-        const aU = ["00:00", "02:00", "04:00", "06:00", "08:00", "10:00"];
-
-        const checkDays = [
-            ["day3", pU], ["day4", pU], ["day5", pU], ["day6", pU],
-            ["day7", aU], ["day8", aU], ["day9", aU],
-            ["day10", pU], ["day11", pU], ["day12", pU], ["day13", pU]
-        ];
-
-        for (let [dayK, usShifts] of checkDays) {
-            if (data[dayK]) {
-                const newS = createShiftsInner(usShifts);
-                for (let t in newS) {
-                    if (newS[t] === "?") {
-                        if (data[dayK].shifts[t] && data[dayK].shifts[t] !== "?" && data[dayK].shifts[t] !== "פלס״ם") {
-                            newS[t] = data[dayK].shifts[t]; // preserve the assigned name
-                        }
-                    }
-                }
-                const oldSJson = JSON.stringify(data[dayK].shifts);
-                const newSJson = JSON.stringify(newS);
-                if (oldSJson !== newSJson) {
-                    data[dayK].shifts = newS;
-                    needsUpdate = true;
-                }
-            }
-        }
-
-        if (needsUpdate) {
-            update(guardsRef, data);
-            console.log("Guards logic successfully updated and pushed to Firebase!");
-        }
-    }
-}).catch(e => console.error(e));
