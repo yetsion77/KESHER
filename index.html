@@ -113,7 +113,7 @@
             <span class="close-modal" id="close-faults">&times;</span>
             <h2><i class="fa-solid fa-screwdriver-wrench"></i> תקלות נפוצות (ליונט)</h2>
             <div class="modal-body">
-                <ul class="fault-list">
+                <ul class="fault-list" id="fault-list-container">
                     <li><strong>לא מצליח להתחבר לסימבה:</strong> להפעיל VPN.</li>
                     <li><strong>לא מוגדר מספר לקוח במסך התחברות:</strong> להזין <code>60013</code>.</li>
                     <li><strong>שינוי בהירות המסך:</strong> להיכנס לעזרים, ומשם לאפליקציית fort.</li>
@@ -140,6 +140,24 @@
                     <li><strong>בעיות נוספות:</strong> להתקשר לכונן החטיבה: <a href="tel:052-2808135"
                             dir="ltr">052-2808135</a>.</li>
                 </ul>
+
+                <div class="add-fault-section" style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                    <h3><i class="fa-solid fa-plus"></i> מידע על תקלה נוספת</h3>
+                    <form id="add-fault-form">
+                        <div class="input-group">
+                            <label for="new-fault-title">תיאור התקלה / הבעיה:</label>
+                            <input type="text" id="new-fault-title" placeholder="לדוגמה: בעיה במכשיר" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="new-fault-solution">פעולות לתיקון (ניתן לרדת שורה למספר שלבים):</label>
+                            <textarea id="new-fault-solution" rows="3" placeholder="רשום את השלבים לפתרון" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn" id="submit-fault-btn" style="padding: 10px; font-size: 0.9em;">
+                            <span>הוסף פתרון למאגר</span>
+                            <i class="fa-solid fa-plus-circle"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

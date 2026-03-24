@@ -559,4 +559,123 @@ window.togglePalsam = async (dayKey, time, currentAssignee) => {
     await set(specificRef, newState);
 };
 
+// --- Custom Faults Logic ---
+const customFaultsRef = ref(database, 'custom_faults');
+const addFaultForm = document.getElementById('add-fault-form');
+const faultListContainer = document.getElementById('fault-list-container');
+const submitFaultBtn = document.getElementById('submit-fault-btn');
 
+let staticFaultsHTML = '';
+if (faultListContainer) {
+    staticFaultsHTML = faultListContainer.innerHTML;
+}
+
+if (addFaultForm) {
+    addFaultForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('new-fault-title').value.trim();
+        const solution = document.getElementById('new-fault-solution').value.trim();
+        
+        if (!title || !solution) return;
+        
+        try {
+            submitFaultBtn.disabled = true;
+            const originalHtml = submitFaultBtn.innerHTML;
+            submitFaultBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>שומר...</span>';
+            
+            const newFaultRef = push(customFaultsRef);
+            await set(newFaultRef, {
+                title: title,
+                solution: solution,
+                timestamp: serverTimestamp()
+            });
+            
+            document.getElementById('new-fault-title').value = '';
+            document.getElementById('new-fault-solution').value = '';
+            
+            submitFaultBtn.innerHTML = '<i class="fa-solid fa-check"></i> <span>נוסף בהצלחה</span>';
+            submitFaultBtn.style.background = 'linear-gradient(135deg, var(--success-color), #00b35c)';
+            
+            setTimeout(() => {
+                submitFaultBtn.disabled = false;
+                submitFaultBtn.innerHTML = '<span>הוסף פתרון למאגר</span> <i class="fa-solid fa-plus-circle"></i>';
+                submitFaultBtn.style.background = '';
+            }, 2000);
+            
+        } catch (error) {
+            console.error("Error adding fault: ", error);
+            alert("אירעה שגיאה בשמירת התקלה. אנא נסה שוב.");
+            submitFaultBtn.disabled = false;
+            submitFaultBtn.innerHTML = '<span>הוסף פתרון למאגר</span> <i class="fa-solid fa-plus-circle"></i>';
+        }
+    });
+}
+
+onValue(customFaultsRef, (snapshot) => {
+    if (!faultListContainer) return;
+
+    // Helper to escape HTML safely
+    const escapeCustomHTML = (str) => {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    };
+    
+    // Reset to static faults first
+    faultListContainer.innerHTML = staticFaultsHTML;
+    
+    if (snapshot.exists()) {
+        snapshot.forEach((childSnapshot) => {
+            const id = childSnapshot.key;
+            const fault = childSnapshot.val();
+            
+            const li = document.createElement('li');
+            li.style.position = 'relative'; 
+            
+            const titleHtml = `<strong>${escapeCustomHTML(fault.title)}:</strong>`;
+            let solutionHtml = '';
+            const lines = (fault.solution || '').split('\\n').filter(line => line.trim() !== '');
+            
+            if (lines.length > 1) {
+                solutionHtml = '<ol>' + lines.map(line => `<li>${escapeCustomHTML(line)}</li>`).join('') + '</ol>';
+            } else {
+                solutionHtml = ` ${escapeCustomHTML(lines[0] || '')}`;
+            }
+            
+            li.innerHTML = `
+                ${titleHtml}${solutionHtml}
+                <button class="delete-custom-fault-btn" data-id="${id}" title="מחק תקלה זו" style="position:absolute; left:-10px; top:0; background:none; border:none; color:#ff5252; cursor:pointer; font-size:1.1em; opacity:0.7;">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            `;
+            
+            // Add hover effect
+            li.addEventListener('mouseenter', () => {
+                const btn = li.querySelector('.delete-custom-fault-btn');
+                if (btn) btn.style.opacity = '1';
+            });
+            li.addEventListener('mouseleave', () => {
+                const btn = li.querySelector('.delete-custom-fault-btn');
+                if (btn) btn.style.opacity = '0.7';
+            });
+            
+            const deleteBtn = li.querySelector('.delete-custom-fault-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (confirm('האם אתה בטוח שברצונך למחוק תקלה זו מהמאגר?')) {
+                        try {
+                            const refToDelete = ref(database, 'custom_faults/' + id);
+                            await remove(refToDelete);
+                        } catch(err) {
+                            console.error("Error deleting fault", err);
+                            alert("שגיאה במחיקת תקלה");
+                        }
+                    }
+                });
+            }
+            
+            faultListContainer.appendChild(li);
+        });
+    }
+});
