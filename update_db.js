@@ -31,7 +31,21 @@ https.get(db_url, (res) => {
             ["day10", "רביעי, 25.3", pmUs],
             ["day11", "חמישי, 26.3", pmUs],
             ["day12", "שישי, 27.3", pmUs],
-            ["day13", "שבת, 28.3", pmUs]
+            ["day13", "שבת, 28.3", pmUs],
+            ["day14", "ראשון, 29.3", amUs],
+            ["day15", "שני, 30.3", amUs],
+            ["day16", "שלישי, 31.3", amUs],
+            ["day17", "רביעי, 1.4", pmUs],
+            ["day18", "חמישי, 2.4", pmUs],
+            ["day19", "שישי, 3.4", pmUs],
+            ["day20", "שבת, 4.4", pmUs],
+            ["day21", "ראשון, 5.4", amUs],
+            ["day22", "שני, 6.4", amUs],
+            ["day23", "שלישי, 7.4", amUs],
+            ["day24", "רביעי, 8.4", pmUs],
+            ["day25", "חמישי, 9.4", pmUs],
+            ["day26", "שישי, 10.4", pmUs],
+            ["day27", "שבת, 11.4", pmUs]
         ];
 
         for (let [day_key, day_name, us_shifts] of dates) {

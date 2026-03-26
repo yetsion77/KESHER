@@ -404,7 +404,21 @@ const defaultGuardsData = {
     day10: { name: "רביעי, 25.3", order: 10, shifts: createShifts(pmUs) },
     day11: { name: "חמישי, 26.3", order: 11, shifts: createShifts(pmUs) },
     day12: { name: "שישי, 27.3", order: 12, shifts: createShifts(pmUs) },
-    day13: { name: "שבת, 28.3", order: 13, shifts: createShifts(pmUs) }
+    day13: { name: "שבת, 28.3", order: 13, shifts: createShifts(pmUs) },
+    day14: { name: "ראשון, 29.3", order: 14, shifts: createShifts(amUs) },
+    day15: { name: "שני, 30.3", order: 15, shifts: createShifts(amUs) },
+    day16: { name: "שלישי, 31.3", order: 16, shifts: createShifts(amUs) },
+    day17: { name: "רביעי, 1.4", order: 17, shifts: createShifts(pmUs) },
+    day18: { name: "חמישי, 2.4", order: 18, shifts: createShifts(pmUs) },
+    day19: { name: "שישי, 3.4", order: 19, shifts: createShifts(pmUs) },
+    day20: { name: "שבת, 4.4", order: 20, shifts: createShifts(pmUs) },
+    day21: { name: "ראשון, 5.4", order: 21, shifts: createShifts(amUs) },
+    day22: { name: "שני, 6.4", order: 22, shifts: createShifts(amUs) },
+    day23: { name: "שלישי, 7.4", order: 23, shifts: createShifts(amUs) },
+    day24: { name: "רביעי, 8.4", order: 24, shifts: createShifts(pmUs) },
+    day25: { name: "חמישי, 9.4", order: 25, shifts: createShifts(pmUs) },
+    day26: { name: "שישי, 10.4", order: 26, shifts: createShifts(pmUs) },
+    day27: { name: "שבת, 11.4", order: 27, shifts: createShifts(pmUs) }
 };
 
 const timeSort = (a, b) => {
@@ -422,9 +436,9 @@ onValue(guardsRef, (snapshot) => {
     const data = snapshot.val();
 
     // Auto-update missing days if database has already been initialized
-    if (!data.day13) {
+    if (!data.day27) {
         let updates = {};
-        for (let i = 3; i <= 13; i++) {
+        for (let i = 3; i <= 27; i++) {
             let dk = "day" + i;
             if (!data[dk]) updates[dk] = defaultGuardsData[dk];
         }
